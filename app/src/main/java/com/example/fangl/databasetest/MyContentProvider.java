@@ -28,7 +28,27 @@ public class MyContentProvider extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        return 0;
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        int deleteRows = 0;
+        switch (uriMatcher.match(uri)){
+            case BOOK_DIR:
+                deleteRows = db.delete("book",selection,selectionArgs);
+                break;
+            case BOOK_ITEM:
+                String bookId = uri.getPathSegments().get(1);
+                deleteRows = db.delete("book","id = ?",new String[]{bookId});
+                break;
+            case CATEGORY_DIR:
+                deleteRows = db.delete("category",selection,selectionArgs);
+                break;
+            case CATEGORY_ITEM:
+                String categoryId = uri.getPathSegments().get(1);
+                deleteRows = db.delete("category","id = ?",new String[]{categoryId});
+                break;
+            default:
+        }
+
+        return deleteRows;
     }
 
     @Override
@@ -48,7 +68,23 @@ public class MyContentProvider extends ContentProvider {
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        Uri uriReturn = null;
+        switch (uriMatcher.match(uri)){
+
+            case BOOK_DIR:
+            case BOOK_ITEM:
+                long newBookId = db.insert("book",null,values);
+                uriReturn = Uri.parse("content://com.example.fangl.databasetest.provider.book/"+newBookId);
+                break;
+            case CATEGORY_DIR:
+            case CATEGORY_ITEM:
+                long newCategoryId = db.insert("category",null,values);
+                uriReturn = Uri.parse("content://com.example.fangl.databasetest.provider.category/"+newCategoryId);
+                break;
+            default:
+        }
+       return uriReturn;
     }
 
     @Override
@@ -82,11 +118,32 @@ public class MyContentProvider extends ContentProvider {
 
         }
 
-        return null;
+        return cursor;
     }
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        int updateRows = 0;
+        switch (uriMatcher.match(uri)){
+
+            case BOOK_DIR:
+                updateRows = db.update("book",values,selection,selectionArgs);
+                break;
+            case BOOK_ITEM:
+                String bookId = uri.getPathSegments().get(1);
+                updateRows = db.update("book",values,"id = ?",new String[]{bookId});
+                break;
+            case CATEGORY_DIR:
+                updateRows = db.update("category",values,selection,selectionArgs);
+                break;
+            case CATEGORY_ITEM:
+                String categoryId = uri.getPathSegments().get(1);
+                updateRows = db.update("category",values,"id = ?",new String[]{categoryId});
+                break;
+            default:
+
+        }
+        return updateRows;
     }
 }
