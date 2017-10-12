@@ -12,15 +12,16 @@ public class MyContentProvider extends ContentProvider {
     public static final int BOOK_ITEM = 1;
     public static final int CATEGORY_DIR = 2;
     public static final int CATEGORY_ITEM = 3;
+    public static final String AUTHORITY = "com.example.fangl.databasetest.provider";
     private static UriMatcher uriMatcher;
     private MyDatabaseHelper dbHelper;
 
     static{
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        uriMatcher.addURI("com.example.fangl.databasetest","book",BOOK_DIR);
-        uriMatcher.addURI("com.example.fangl.databasetest","book/#",BOOK_ITEM);
-        uriMatcher.addURI("com.example.fangl.databasetest","category",CATEGORY_DIR);
-        uriMatcher.addURI("com.example.fangl.databasetest","category/#",CATEGORY_ITEM);
+        uriMatcher.addURI(AUTHORITY,"book",BOOK_DIR);
+        uriMatcher.addURI(AUTHORITY,"book/#",BOOK_ITEM);
+        uriMatcher.addURI(AUTHORITY,"category",CATEGORY_DIR);
+        uriMatcher.addURI(AUTHORITY,"category/#",CATEGORY_ITEM);
     }
 
     public MyContentProvider() {
@@ -75,12 +76,12 @@ public class MyContentProvider extends ContentProvider {
             case BOOK_DIR:
             case BOOK_ITEM:
                 long newBookId = db.insert("book",null,values);
-                uriReturn = Uri.parse("content://com.example.fangl.databasetest.provider.book/"+newBookId);
+                uriReturn = Uri.parse("content://"+AUTHORITY+"/book/"+newBookId);
                 break;
             case CATEGORY_DIR:
             case CATEGORY_ITEM:
                 long newCategoryId = db.insert("category",null,values);
-                uriReturn = Uri.parse("content://com.example.fangl.databasetest.provider.category/"+newCategoryId);
+                uriReturn = Uri.parse("content://"+AUTHORITY+"/category/"+newCategoryId);
                 break;
             default:
         }
